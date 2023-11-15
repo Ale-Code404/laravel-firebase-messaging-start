@@ -8,7 +8,6 @@ use Kreait\Firebase\Messaging;
 use Kreait\Firebase\Messaging\Notification;
 use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging\MessageTarget;
-use stdClass;
 
 class NotificationService
 {
@@ -16,34 +15,49 @@ class NotificationService
 
     public function __construct()
     {
+        // Injected via app helper
         $this->messaging = app('firebase.messaging');
     }
 
-    public function sendCampaing(Campaing $data, string $token)
+    public function sendCampaing(Campaing $data, string | null $token)
     {
-        $users = [
-            ['name' => 'Usuario']
-        ];
+        // Clients have to subscribe to topic via app or server
+        $defaultCampaignTopic = 'marketing';
 
-        foreach ($users as $user) {
-            $cloudCampaign = Notification::create(
-                "Hola {$user['name']}, " . \lcfirst($data->title),
-                $data->description,
-                $data->image
-            );
+        /**
+         * Client could be subcribed with this, example on update or create model
+         * $this->messaging->subscribeToTopic($defaultCampaignTopic, $token)
+         */
 
+        $cloudCampaign = Notification::create(
+            ucfirst($data->title),
+            ucfirst($data->description),
+            $data->image
+        );
+
+        if ($token) {
             $cloudMessage = CloudMessage::withTarget(MessageTarget::TOKEN, $token)
                 ->withNotification($cloudCampaign)
                 // Example additional data
                 ->withData([
-                    'created_at' => \date('Y-m-d'),
-                    'notification-id' => \uniqid('notification-')
+                    'created_at' => date('Y-m-d h:i:s'),
+                    'notification_id' => uniqid('notification-'),
+                    'campaign_id' => uniqid('campaign-')
                 ]);
-
-            $cloudMessages[] = $cloudMessage;
+        } else {
+            $cloudMessage = CloudMessage::withTarget(MessageTarget::TOPIC, $defaultCampaignTopic)
+                ->withNotification($cloudCampaign)
+                // Example additional data
+                ->withData([
+                    'created_at' => date('Y-m-d h:i:s'),
+                    'notification_id' => uniqid('notification-'),
+                    'campaign_id' => uniqid('campaign-')
+                ]);
         }
 
+        $response = $this->messaging->send($cloudMessage);
 
-        $response = $this->messaging->sendAll($cloudMessages);
+        // For debugging
+        // \dd(compact('cloudMessage', 'response'));
     }
 }

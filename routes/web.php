@@ -14,6 +14,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::view('/', 'notification');
+Route::view('/', 'notification')->name('notifications.campaings.form');
 Route::post('/notifications/campaigns', [NotificationController::class, 'createCampaign'])
     ->name('notifications.campaings.create');

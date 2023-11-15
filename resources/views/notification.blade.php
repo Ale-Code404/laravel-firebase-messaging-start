@@ -23,13 +23,13 @@
     <h2>Integracion de notificaciones Push</h2>
 
     @if(session('notification.send.success'))
-    <div class="alert alert-success">
+    <div class="alert alert-success mt-4">
       {{ session('notification.send.success') }}
     </div>
     @endif
 
     @if(session('notification.send.fail'))
-    <div class="alert alert-success">
+    <div class="alert alert-danger mt-4">
       {{ session('notification.send.fail') }}
     </div>
     @endif
@@ -49,7 +49,7 @@
         <label for="image">Imagen</label>
       </div>
       <div class="form-floating mb-3">
-        <input type="text" name="token" class="form-control" placeholder="Token de registro FCM" required>
+        <input type="text" name="token" class="form-control" placeholder="Token de registro FCM">
         <label for="token">Token del dispositivo</label>
       </div>
       <button type="submit" class="btn btn-primary">Enviar Notificación</button>
