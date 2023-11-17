@@ -1,5 +1,7 @@
 # Laravel Firebase Cloud Messaging implementation
 
+Simple template for firebase push notifications in Laravel 10.x 
+
 ## How to run
 
 1. Use autodiscover config file for firebase auth in **storage/app**
