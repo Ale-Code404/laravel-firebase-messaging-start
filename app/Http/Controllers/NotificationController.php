@@ -24,16 +24,18 @@ class NotificationController extends Controller
 
         $campaing = new Campaing($data['title'], $data['description'], $data['image']);
 
-        try {
-            $service->sendCampaing($campaing, $data['token']);
+        $redirect = redirect()
+            ->route('notifications.campaings.form')
+            ->withInput();
 
-            return redirect()
-                ->route('notifications.campaings.form')
-                ->with('notification.send.success', 'Campaña enviada correctamente');
+        try {
+            $response = $service->sendCampaing($campaing, $data['token']);
+
+            $redirect->with('notification.send.response', json_encode($response));
+
+            return $redirect->with('notification.send.success', 'Notificación enviada correctamente');
         } catch (Exception $e) {
-            return redirect()
-                ->route('notifications.campaings.form')
-                ->with('notification.send.fail', $e->getMessage());
+            return $redirect->with('notification.send.fail', $e->getMessage());
         }
     }
 }
